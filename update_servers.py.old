@@ -1,0 +1,100 @@
+import paramiko
+from servers import ip_list
+import pprint
+
+port = 22 
+username = 'root'
+key_path = '/home/nikola/.ssh/id_ed25519'
+commands = [
+    'apt-get update', 
+    'apt-get install -y wireguard',
+    'wg genkey | sudo tee /etc/wireguard/wg0.key',
+    'cat /etc/wireguard/wg0.key | wg pubkey | sudo tee /etc/wireguard/wg0.pub'
+    # Example command
+    #'apt upgrade',   # Another example
+    #'free -m'  # Check free memory
+]
+
+
+public_keys = {}
+
+def execute_ssh_command(host, port, username, key_path, commands):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        private_key = paramiko.Ed25519Key.from_private_key_file(key_path)
+        print(f"Connecting to {host} via SSH...")
+        ssh.connect(host, port=port, username=username, pkey=private_key)
+        print(f"Connected to {host}")
+        
+        # Loop through the commands and execute each one
+        for command in commands:
+            print(f"Executing command: {command}")
+            stdin, stdout, stderr = ssh.exec_command(command)
+            
+            # Collect the output
+            output = stdout.read().decode()
+            error = stderr.read().decode()
+
+            # Provide feedback based on the command's output
+            if output:
+                print(f"Output: {output}")
+            if error:
+                print(f"Error: {error}")
+            else:
+                print(f"Command '{command}' executed successfully!")
+                
+        # Close the SSH connection
+        ssh.close()
+        print(f"Connection to {host} closed.")
+        
+    except Exception as e:
+        print(f"Error connecting to {host}: {e}")
+
+def execute_commands_on_multiple_hosts(ip_list, port, username, key_path, commands):
+   for name, ip in ip_list.items():
+    execute_ssh_command(ip, port, username, key_path, commands)
+
+
+
+
+# Execute the commands on all the hosts
+execute_commands_on_multiple_hosts (ip_list, port, username, key_path, commands)
+
+def get_private_key(ip, port, username, key_path):
+    try:
+        key = paramiko.Ed25519Key(filename=key_path)
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(ip, port=port, username=username, pkey=key)
+
+        cmd = 'cat /etc/wireguard/wg0.key'
+        stdin, stdout, stderr = ssh.exec_command(cmd)
+        private_key = stdout.read().decode().strip()
+        error_output = stderr.read().decode().strip()
+
+        ssh.close()
+
+        if error_output:
+            return None, f"Error: {error_output}"
+        return private_key, None
+    except Exception as e:
+        return None, f"Exception: {str(e)}"
+
+# Execute on all hosts and collect private keys
+for name, ip in ip_list.items():
+    print(f"Exporting public key {name} ({ip})...")
+    priv_key, err = get_private_key(ip, port, username, key_path)
+    if err:
+        print(f"[ERROR] {name}: {err}")
+    else:
+        public_keys[name] = priv_key
+
+# Now public_keys contains each server's generated private key
+print("\nCollected Private Keys:")
+for server, key in public_keys.items():
+    print(f"{server}: {key}")
+
+with open('public_keys.py', 'w') as f:
+    f.write('public_keys = ')
+    pprint.pprint(public_keys, stream=f)

@@ -1,0 +1,13 @@
+
+[Interface]
+Address = 10.0.100.2/24
+PrivateKey = PostUp = wg set %i private-key /etc/wireguard/%i.key
+ListenPort = 51820
+Interface = wg2
+
+[Peer]
+# server2
+PublicKey = L+qG3TYWi10mYdsSScTHNj5cVwyDpfNg7b3/86WFnRY=
+Endpoint = 91.99.55.242:51820
+AllowedIPs = 10.0.0.0/24
+PersistentKeepalive = 25
