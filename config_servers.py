@@ -1,3 +1,7 @@
+### Configures wireguard service at each server
+### Cautiousness required: Script generates new keys for all servers so the setup must be redpeloyed after this script is being run
+### Run get_public_keys.py then run config_vpn.py and generate_client_config.py to get updated status
+
 import paramiko
 from servers import ip_list
 import pprint

@@ -1,3 +1,5 @@
+### Generates client config in txt file that needs to be placed and adjusted slightly
+
 import os
 import importlib.util
 from servers import ip_list
@@ -15,7 +17,7 @@ public_keys = load_public_keys()
 
 # Configuration details
 client_private_key = 'PostUp = wg set %i private-key /etc/wireguard/%i.key'  # Replace with actual private key
-listen_port = 51820
+listen_port = 51000
 
 # Generate client config for a single interface with a single server as peer
 def generate_client_interface_config(interface_id, server_name, server_ip, server_pub_key, client_ip):

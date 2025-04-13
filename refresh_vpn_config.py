@@ -1,3 +1,5 @@
+### Refreshes VPN servers config by shut/unshut inteface: needed when any config adjustment is done
+
 import paramiko
 from servers import ip_list
 

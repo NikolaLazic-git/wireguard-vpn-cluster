@@ -1,3 +1,4 @@
+### List of VPN servers with corresponding public IP, manually populated after servers have been created via TF
 ip_list = {
     'server1': '49.13.219.227',
     'server2': '91.99.55.242',

@@ -1,3 +1,8 @@
+### creates VPN cluster setup with servers being full-mesh peered between themselves 
+### Adds client peer config to each of servers
+
+
+
 import paramiko
 from servers import ip_list
 #from public_keys import public_keys 
@@ -12,14 +17,7 @@ def load_public_keys():
     spec.loader.exec_module(public_keys_module)
     return public_keys_module.public_keys
 
-# def load_clients():
-#     spec = importlib.util.spec_from_file_location("clients", "./clients.py")
-#     clients_module = importlib.util.module_from_spec(spec)
-#     spec.loader.exec_module(clients_module)
-#     return clients_module.clients   
-
 public_keys = load_public_keys()
-#clients = load_clients()
 
 # Config
 port = 22

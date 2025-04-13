@@ -1,3 +1,4 @@
+### Whitelisted client VPN peers with peer public key
 client_peers = {
     1: {
         "ip": "10.0.100.1",

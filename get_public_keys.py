@@ -1,3 +1,5 @@
+### Connectes to each server and takes public key storing it in public_keys.py list for later usage
+
 import paramiko
 from servers import ip_list
 import pprint
